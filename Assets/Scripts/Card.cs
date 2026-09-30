@@ -8,6 +8,7 @@ namespace CardgleGame
     public class Card : ScriptableObject
     {
         public string cardName;
+        public Rarity rarity;
         public CardType cardType;
         public int health;
         public int damage;
@@ -28,6 +29,14 @@ namespace CardgleGame
             Range,
             Healer,
 
+        }
+        public enum Rarity
+        {
+            Common,
+            Uncommon,
+            Rare,
+            Epic,
+            Legendary
         }
     }
 }
