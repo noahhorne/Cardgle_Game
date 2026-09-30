@@ -10,8 +10,9 @@ namespace CardgleGame
         public string cardName;
         public CardType cardType;
         public int health;
-        public int damageMin;
-        public int damageMax;
+        public int damage;
+        public int healthAttack;
+        public int speed;
         public DamageType damageType;
 
         public enum CardType
