@@ -14,6 +14,7 @@ namespace CardgleGame
         public int damage;
         public int healthAttack;
         public int speed;
+        public int cost;
         public DamageType damageType;
 
         public enum CardType
