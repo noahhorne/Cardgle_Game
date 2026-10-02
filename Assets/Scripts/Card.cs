@@ -16,6 +16,9 @@ namespace CardgleGame
         public int speed;
         public int cost;
         public DamageType damageType;
+        public CardAbility activeAbility;
+        public CardAbility passiveAbility;
+            
 
         public enum CardType
         {
