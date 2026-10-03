@@ -4,8 +4,7 @@ using UnityEngine;
 public class CardAbility : ScriptableObject
 {
     public string abilityName;
-    public int value;
-    public int duration;
+    public int cost;
     public string description;
 
 }
