@@ -9,6 +9,7 @@ namespace CardgleGame
     {
         public string cardName;
         public Rarity rarity;
+        public Sprite cardArt;
         public CardType cardType;
         public int health;
         public int damage;
