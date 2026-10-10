@@ -10,31 +10,14 @@ namespace CardgleGame
         public string cardName;
         public Rarity rarity;
         public Sprite cardArt;
-        public CardType cardType;
         public int health;
         public int damage;
         public int healthAttack;
         public int speed;
         public int cost;
-        public DamageType damageType;
         public CardAbility activeAbility;
-        public CardAbility passiveAbility;
-            
+        public CardAbility passiveAbility;            
 
-        public enum CardType
-        {
-            Melee,
-            Range,
-            Healer
-        }
-
-        public enum DamageType
-        {
-            Melee,
-            Range,
-            Healer,
-
-        }
         public enum Rarity
         {
             Common,
