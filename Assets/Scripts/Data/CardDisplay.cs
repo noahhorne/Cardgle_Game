@@ -4,6 +4,7 @@ using UnityEngine;
 using CardgleGame;
 using UnityEngine.UI;
 using TMPro;
+using NUnit.Framework.Internal;
 
 public class CardDisplay : MonoBehaviour
 {
@@ -20,6 +21,6 @@ public class CardDisplay : MonoBehaviour
 
     public void UpdateCardDisplay()
     {
-        cardImage.sprite = cardData.cardArt;
+        
     }
 }
