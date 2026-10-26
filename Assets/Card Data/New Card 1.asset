@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardgleGame.Card
   cardName: JOe
   rarity: 0
-  cardArt: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+  cardArt: {fileID: 3684732902739343859, guid: 474ce57d7c1704418af05d72d996ae5e, type: 3}
   health: 1
   damage: 1
   healthAttack: 2

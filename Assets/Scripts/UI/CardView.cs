@@ -21,4 +21,10 @@ public class CardView : MonoBehaviour
         costText.text = card.cost.ToString();
         artwork.sprite = card.cardArt;
     }
+
+    public void Refresh(int health, int damage)
+    {
+        healthText.text = health.ToString();
+        damageText.text = damage.ToString();
+    }
 }
