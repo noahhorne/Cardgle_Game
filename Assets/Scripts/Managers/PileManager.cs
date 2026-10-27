@@ -32,6 +32,12 @@ public class PileManager : MonoBehaviour
     private void Start()
     {
         PopulateDrawPile(startingCards);
+        ShuffleDrawPile();
+
+        for (int i = 0; i < 5; i++)
+        {
+             DrawCard();
+        }
         RefreshPileViews();
     }
 
@@ -115,6 +121,5 @@ public class PileManager : MonoBehaviour
         discardPileView.Display(discardPile);
         handView.Display(handPile);
     }
-
 
 }
