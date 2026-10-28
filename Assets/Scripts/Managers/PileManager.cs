@@ -68,6 +68,14 @@ public class PileManager : MonoBehaviour
         }
     }
 
+    public void PlayCard(Card card)
+    {
+        if (handPile.cards.Remove(card))
+        {
+            RefreshPileViews();
+        }
+    }
+
     public void DiscardCard(Card card)
     {
         if (handPile.cards.Contains(card))
