@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using CardgleGame;
 using TMPro;
 using UnityEngine;
@@ -18,5 +20,11 @@ public class CardView : MonoBehaviour
         damageText.text = card.damage.ToString();
         costText.text = card.cost.ToString();
         artwork.sprite = card.cardArt;
+    }
+
+    public void Refresh(int health, int damage)
+    {
+        healthText.text = health.ToString();
+        damageText.text = damage.ToString();
     }
 }
