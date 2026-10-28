@@ -21,6 +21,16 @@ public class BoardManager : MonoBehaviour
     {
         card.DragEnded += HandleDragEnded;
     }
+
+    public void SetSlots(List<CardSlot> newSlots)
+    {
+        if (newSlots == null)
+        {
+            throw new System.ArgumentNullException(nameof(newSlots));
+        }
+
+        slots = newSlots;
+    }
     
     private void HandleDragEnded(CardObject card, PointerEventData eventData)
     {

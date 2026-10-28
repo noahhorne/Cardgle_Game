@@ -33,6 +33,7 @@ public class PileManager : MonoBehaviour
     {
         PopulateDrawPile(startingCards);
         ShuffleDrawPile();
+        print("Starting cards: " + startingCards.Count);
 
         for (int i = 0; i < 5; i++)
         {
