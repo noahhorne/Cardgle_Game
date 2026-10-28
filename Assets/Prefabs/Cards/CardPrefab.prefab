@@ -286,6 +286,7 @@ GameObject:
   - component: {fileID: 1732630547993518197}
   - component: {fileID: 4491907900317526845}
   - component: {fileID: 7939782184508569388}
+  - component: {fileID: -7143282156338890266}
   m_Layer: 5
   m_Name: CardPrefab
   m_TagString: Untagged
@@ -372,6 +373,21 @@ MonoBehaviour:
   damageText: {fileID: 5839856020383751938}
   costText: {fileID: 7722438772840915092}
   artwork: {fileID: 635648169223934766}
+--- !u!114 &-7143282156338890266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5021045970072597203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab16625845750dc4a952ed26054c404c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardObject
+  hoverScale: 1.2
+  hoverLift: 60
+  moveSpeed: 12
 --- !u!1 &5769047670403254753
 GameObject:
   m_ObjectHideFlags: 0
