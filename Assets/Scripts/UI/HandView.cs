@@ -17,6 +17,7 @@ public class HandView : MonoBehaviour
 
     public void Display(Pile hand)
     {
+        Debug.Log($"HandView displaying {hand.cardCount} cards");
 
         // Clear existing cards
         foreach (Transform child in cardContainer)
@@ -43,7 +44,7 @@ public class HandView : MonoBehaviour
             cardGO.transform.localPosition = pos;
             cardGO.transform.localRotation = rot;
 
-            cardObject.Intialize(hand.cards[i]);
+            cardObject.Initialize(hand.cards[i]);
             cardObject.SetHome(pos, rot);
         }
     }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de6a65361b562ec4b8b7ba5dec05a817, type: 3}
   m_Name: New Card 1
   m_EditorClassIdentifier: Assembly-CSharp::CardgleGame.Card
-  cardName: JOe
+  cardName: Paul
   rarity: 0
   cardArt: {fileID: 3684732902739343859, guid: 474ce57d7c1704418af05d72d996ae5e, type: 3}
   health: 1

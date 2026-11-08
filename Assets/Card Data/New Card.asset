@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de6a65361b562ec4b8b7ba5dec05a817, type: 3}
   m_Name: New Card
   m_EditorClassIdentifier: Assembly-CSharp::CardgleGame.Card
-  cardName: Example 2
+  cardName: Jacob
   rarity: 0
   cardArt: {fileID: 0}
-  cardType: 0
   health: 1
   damage: 1
   healthAttack: 1

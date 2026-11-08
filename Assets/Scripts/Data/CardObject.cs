@@ -1,12 +1,10 @@
 using System;
 using CardgleGame;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Rendering;
 
 [RequireComponent(typeof(CardView))]
-public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     [Header("Hover / movement")]
     [SerializeField] private float hoverScale = 1.2f;
@@ -43,7 +41,7 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         homePosition = transform.localPosition;
     }
 
-    public void Intialize(Card data)
+    public void Initialize(Card data)
     {
         Data = data;
         CurrentHealth = data.health;
