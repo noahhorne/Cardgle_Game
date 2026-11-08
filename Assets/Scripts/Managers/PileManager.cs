@@ -9,11 +9,30 @@ public class PileManager : MonoBehaviour
     [SerializeField] private HandView handView;
 
     [SerializeField] private List<Card> startingCards;
+    [SerializeField] private int maxHandSizeToDraw = 6;
 
     private Pile drawPile;
     private Pile handPile;
     private Pile discardPile;
     
+    private void OnEnable()
+    {
+        drawPileView.Clicked += TryDrawCard;
+    }
+
+    private void OnDisable()
+    {
+        drawPileView.Clicked -= TryDrawCard;
+    }
+
+    private void TryDrawCard()
+    {
+        Debug.Log($"[PileManager] TryDrawCard, hand size {handPile.cardCount}");
+        if (handPile.cardCount < maxHandSizeToDraw)
+        {
+            DrawCard();
+        }
+    }
     private void Awake()
     {
         drawPile = CreatePile("Draw");
@@ -32,12 +51,14 @@ public class PileManager : MonoBehaviour
     private void Start()
     {
         PopulateDrawPile(startingCards);
+        Debug.Log($"Draw pile after populate: {drawPile.cardCount}");
         ShuffleDrawPile();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 6; i++)
         {
              DrawCard();
         }
+        Debug.Log($"Hand after drawing: {handPile.cardCount}");
         RefreshPileViews();
     }
 
