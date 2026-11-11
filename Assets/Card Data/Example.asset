@@ -15,7 +15,7 @@ MonoBehaviour:
   cardName: Lalo
   rarity: 0
   cardArt: {fileID: 0}
-  health: 2
+  health: 10
   damage: 2
   healthAttack: 2
   speed: 2
