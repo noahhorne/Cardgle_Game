@@ -2,6 +2,7 @@ using System;
 using CardgleGame;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(CardView))]
 public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
@@ -11,14 +12,19 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     [SerializeField] private float hoverLift = 60f;
     [SerializeField] private float moveSpeed = 12f;
 
+    [Header("Selection")]
+    [SerializeField] private GameObject glow;
+
     public Card Data { get; private set;}
     public int CurrentHealth { get; private set;}
     public int CurrentDamage { get; private set;}
+    public int CurrentHealthAttack { get; private set; }
     public int CurrentSpeed { get; private set;}
 
     public bool isHovered { get; private set;}
     public bool isDragging { get; private set;}
     public bool isPlaced {get; private set;}
+    public bool isSelected {get; private set;}
     public static event Action<CardObject> Spawned;
 
     public event Action<CardObject> Clicked;
@@ -27,6 +33,7 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public event Action<CardObject> Died;
 
     private CardView view;
+    private Image glowImage;
     private RectTransform rectTransform;
 
     private Vector3 homePosition;
@@ -39,6 +46,11 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         view = GetComponent<CardView>();
         rectTransform = (RectTransform)transform;
         homePosition = transform.localPosition;
+        if (glow != null)
+        {
+            glowImage = glow.GetComponent<Image>();
+            glow.SetActive(false);
+        }
     }
 
     public void Initialize(Card data)
@@ -46,6 +58,7 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         Data = data;
         CurrentHealth = data.health;
         CurrentDamage = data.damage;
+        CurrentHealthAttack = data.healthAttack;
         CurrentSpeed = data.speed;
         view.Display(data);
         Spawned?.Invoke(this);
@@ -70,6 +83,24 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         float fit = Mathf.Min(slot.rect.width / cardSize.x, slot.rect.height / cardSize.y);
         rectScale = Vector3.one * fit;
         transform.SetAsLastSibling();
+    }
+
+    public void SetSelected(bool selected)
+    {
+        isSelected = selected;
+        if (glow != null)
+        {
+            glow.SetActive(selected);
+        }
+    }
+
+    public void SetGlowColor(Color color)
+    {
+        Debug.Log($"SetGlowColor {color}, glowImage missing: {glowImage == null}");
+        if (glowImage != null)
+        {
+            glowImage.color = color;
+        }
     }
 
     public void TakeDamage(int amount)
