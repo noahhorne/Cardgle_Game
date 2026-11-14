@@ -1,43 +1,48 @@
 using UnityEngine;
 using System.Collections.Generic;
 using CardgleGame;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Reflection.Metadata.Ecma335;
+using System.ComponentModel.Design;
+using System.Security.Cryptography;
 
 public class PileManager : MonoBehaviour
 {
     [SerializeField] private PileView drawPileView;
     [SerializeField] private PileView discardPileView;
     [SerializeField] private HandView handView;
+    [SerializeField] private TurnManager turnManager;
 
     [SerializeField] private List<Card> startingCards;
+    [SerializeField] private int openingHandSize = 6; 
     [SerializeField] private int maxHandSizeToDraw = 6;
 
-    private Pile drawPile;
-    private Pile handPile;
-    private Pile discardPile;
-    
-    private void OnEnable()
+    private class PlayerPiles 
     {
-        drawPileView.Clicked += TryDrawCard;
+        public Pile draw;
+        public Pile hand;
+        public Pile discard;
     }
 
-    private void OnDisable()
-    {
-        drawPileView.Clicked -= TryDrawCard;
-    }
-
-    private void TryDrawCard()
-    {
-        Debug.Log($"[PileManager] TryDrawCard, hand size {handPile.cardCount}");
-        if (handPile.cardCount < maxHandSizeToDraw)
-        {
-            DrawCard();
-        }
-    }
+    private PlayerPiles Active => piles[turnManager.CurrentPlayer];
+    private Dictionary<Player, PlayerPiles> piles;
     private void Awake()
     {
-        drawPile = CreatePile("Draw");
-        handPile = CreatePile("Hand");
-        discardPile = CreatePile("Discard");
+        piles = new Dictionary<Player, PlayerPiles>
+        {
+            { Player.PlayerOne, CreatePlayerPiles() },
+            { Player.PlayerTwo, CreatePlayerPiles() }
+        };
+    }
+
+    private PlayerPiles CreatePlayerPiles()
+    {
+        return new PlayerPiles
+        {
+            draw = CreatePile("Draw"),
+            hand = CreatePile("Hand"),
+            discard = CreatePile("Discard")
+        };
     }
 
     private Pile CreatePile(string type)
@@ -47,19 +52,45 @@ public class PileManager : MonoBehaviour
         pile.cards = new List<Card>();
         return pile;
     }
+    private void OnEnable()
+    {
+        drawPileView.Clicked += TryDrawCard;
+        turnManager.PhaseChanged += HandlePhaseChanged;
+    }
+
+    private void OnDisable()
+    {
+        drawPileView.Clicked -= TryDrawCard;
+        turnManager.PhaseChanged += HandlePhaseChanged;
+    }
+
+    private void HandlePhaseChanged(TurnPhase phase)
+    {
+        RefreshPileViews();
+    }
 
     private void Start()
     {
-        PopulateDrawPile(startingCards);
-        Debug.Log($"Draw pile after populate: {drawPile.cardCount}");
-        ShuffleDrawPile();
-
-        for (int i = 0; i < 6; i++)
+        foreach (PlayerPiles p in piles.Values)
         {
-             DrawCard();
+            p.draw.cards.AddRange(startingCards);
+            Shuffle(p.draw);
+
+            for (int i = 0; i < openingHandSize; i++)
+            {
+                DrawInto(p);
+            }
         }
-        Debug.Log($"Hand after drawing: {handPile.cardCount}");
+
         RefreshPileViews();
+    }
+
+    private void TryDrawCard()
+    {
+        if (Active.hand.cardCount <= maxHandSizeToDraw)
+        {
+            DrawCard();
+        }
     }
 
     // Update is called once per frame
@@ -78,20 +109,31 @@ public class PileManager : MonoBehaviour
         return card;
     }
 
+    private bool DrawInto(PlayerPiles p)
+    {
+        if (p.draw.cardCount == 0)
+        {
+            return false;
+        }
+
+        Card drawnCard = p.draw.cards[0];
+        p.draw.cards.RemoveAt(0);
+        p.hand.cards.Add(drawnCard);
+        return true;
+    }
+
+
     public void DrawCard()
     {
-        if (drawPile.cardCount > 0)
+        if (DrawInto(Active))
         {
-            Card drawnCard = drawPile.cards[0];
-            drawPile.cards.RemoveAt(0);
-            handPile.cards.Add(drawnCard);
             RefreshPileViews();
         }
     }
 
     public void PlayCard(Card card)
     {
-        if (handPile.cards.Remove(card))
+        if (Active.hand.cards.Remove(card))
         {
             RefreshPileViews();
         }
@@ -99,10 +141,11 @@ public class PileManager : MonoBehaviour
 
     public void DiscardCard(Card card)
     {
-        if (handPile.cards.Contains(card))
+        PlayerPiles p = Active;
+        if (p.hand.cards.Contains(card))
         {
-            handPile.cards.Remove(card);
-            discardPile.cards.Add(card);
+            p.hand.cards.Remove(card);
+            p.discard.cards.Add(card);
             RefreshPileViews();
         }
     }
@@ -113,42 +156,37 @@ public class PileManager : MonoBehaviour
         RefreshPileViews();
     }
     
-    public void PopulateDrawPile(List<Card> cards)
-    {
-        for (int i = 0; i < cards.Count; i++)
-        {
-            drawPile.cards.Add(cards[i]);
-        }
-        RefreshPileViews();
-    }
-    
     public void PopulateDrawPileFromDiscard()
     {
-        for (int i = 0; i < discardPile.cardCount; i++)
-        {
-            drawPile.cards.Add(discardPile.cards[i]);
-        }
-        discardPile.cards.Clear();
+        PlayerPiles p = Active;
+        p.draw.cards.AddRange(p.discard.cards);
+        p.discard.cards.Clear();
         RefreshPileViews();
     }
 
     public void ShuffleDrawPile()
     {
-        for (int i = 0; i < drawPile.cardCount; i++)
-        {
-            Card temp = drawPile.cards[i];
-            int randomIndex = Random.Range(i, drawPile.cardCount);
-            drawPile.cards[i] = drawPile.cards[randomIndex];
-            drawPile.cards[randomIndex] = temp;
-        }
+        Shuffle(Active.draw);
         RefreshPileViews();
     }
-    
-        private void RefreshPileViews()
+
+    private void Shuffle(Pile pile)
     {
-        drawPileView.Display(drawPile);
-        discardPileView.Display(discardPile);
-        handView.Display(handPile);
+        for (int i = 0; i < pile.cardCount; i++)
+        {
+            Card temp = pile.cards[i];
+            int randomIndex = Random.Range(i, pile.cardCount);
+            pile.cards[i] = pile.cards[randomIndex];
+            pile.cards[randomIndex] = temp;
+        }
+    }
+    
+    private void RefreshPileViews()
+    {
+        PlayerPiles p = Active;
+        drawPileView.Display(p.draw);
+        discardPileView.Display(p.discard);
+        handView.Display(p.hand);
     }
 
 }

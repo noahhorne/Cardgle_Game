@@ -9,6 +9,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private List<CardSlot> slots;
     [SerializeField] private PileManager pileManager;
     [SerializeField] private PileView discardPileView;
+    [SerializeField] private TurnManager turnManager;
 
     private void OnEnable()
     {
@@ -43,9 +44,16 @@ public class BoardManager : MonoBehaviour
         CardSlot slot = FindSlotAt(eventData.position, eventData.pressEventCamera);
 
         if (slot == null || !slot.isEmpty) return;
+        
+        if (!turnManager.CanPlace(slot.Owner))
+        {
+            Debug.Log($"[Board] can't place in a {slot.Owner} slot during {turnManager.CurrentPhase}");
+            return;
+        }
 
         slot.Place(card);
         pileManager.PlayCard(card.Data);
+        turnManager.NotifyPlaced();
     }
 
     private CardSlot FindSlotAt(Vector2 screenPoint, Camera cam)

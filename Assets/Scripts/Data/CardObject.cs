@@ -24,6 +24,7 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public bool isHovered { get; private set;}
     public bool isDragging { get; private set;}
     public bool isPlaced {get; private set;}
+    public Player Owner { get; private set; }
     public bool isSelected {get; private set;}
     public static event Action<CardObject> Spawned;
 
@@ -83,6 +84,11 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         float fit = Mathf.Min(slot.rect.width / cardSize.x, slot.rect.height / cardSize.y);
         rectScale = Vector3.one * fit;
         transform.SetAsLastSibling();
+    }
+
+    public void SetOwner(Player owner)
+    {
+        Owner = owner;
     }
 
     public void SetSelected(bool selected)
