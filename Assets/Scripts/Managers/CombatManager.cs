@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 public class CombatManager : MonoBehaviour
 {
     private enum CombatMode {None, Attack, Heal}
+    [SerializeField] private TurnManager turnManager;
     
     [Header("Glow colours")] 
      [SerializeField] private Color neutralColor = new Color(1f, 0.9f, 0.3f, 1f);
@@ -21,6 +22,7 @@ public class CombatManager : MonoBehaviour
     private void OnEnable()
     {
         CardObject.Spawned += HandleCardSpawned;
+        turnManager.PhaseChanged += HandlePhaseChanged;
     }
 
     private void OnDisable()
@@ -32,6 +34,11 @@ public class CombatManager : MonoBehaviour
     {
         card.Clicked += HandleCardClicked;
         card.Died += HandleCardDied;
+    }
+
+    private void HandlePhaseChanged(TurnPhase phase)
+    {
+        Deselect();
     }
 
     private void Update()
@@ -85,9 +92,12 @@ public class CombatManager : MonoBehaviour
             return;
         }
 
+        if (!turnManager.IsTurnPhase) return;
+        Player current = turnManager.CurrentPlayer;
+
         if (selected == null)
         {
-            Select(card);
+            if (card.Owner == current) Select(card);
             return;
         }
         
@@ -101,24 +111,32 @@ public class CombatManager : MonoBehaviour
         {
             case CombatMode.Attack:
             Attack(selected, card);
-            Deselect();
+            FinishAction();
             break;
 
             case CombatMode.Heal:
-            Heal(selected, card);
-            Deselect();
+            if (card.Owner != selected.Owner) return;
+            if (Heal(selected, card)) FinishAction();
             break;
 
             default:
-            Select(card);
+            if (card.Owner == current) Select(card);;
             break;
         }
     }
 
+    private void FinishAction()
+    {
+        Deselect();
+        turnManager.NotifyActed();
+    }
     private void Select(CardObject card)
     {
+        if (selected != null) selected.SetSelected(false);
         selected = card;
+        mode = CombatMode.None;
         card.SetSelected(true);
+        UpdateGlow();
     }
 
     private Color ColorForMode()
@@ -156,15 +174,16 @@ public class CombatManager : MonoBehaviour
         target.TakeDamage(damage);
     }
 
-    private void Heal(CardObject healer, CardObject target)
+    private bool Heal(CardObject healer, CardObject target)
     {
         int amount = healer.CurrentHealthAttack;
         if (amount <= 0)
         {
-            return;
+            return false;
         }
         Debug.Log($"{healer.Data.cardName} heals {target.Data.cardName} for {amount}");
         target.Heal(amount);
+        return true;
     }
     
     private void HandleCardDied(CardObject card)
