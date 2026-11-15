@@ -25,6 +25,8 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public bool isDragging { get; private set;}
     public bool isPlaced {get; private set;}
     public Player Owner { get; private set; }
+    public CardSlot Slot { get; private set; }
+    public int Lane => Slot != null ? Slot.Lane : -1;
     public bool isSelected {get; private set;}
     public static event Action<CardObject> Spawned;
 
@@ -89,6 +91,11 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void SetOwner(Player owner)
     {
         Owner = owner;
+    }
+
+    public void SetSlot(CardSlot slot)
+    {
+        Slot = slot;
     }
 
     public void SetSelected(bool selected)
