@@ -56,6 +56,18 @@ public class BoardManager : MonoBehaviour
         turnManager.NotifyPlaced();
     }
 
+    public bool IsLaneOpen(Player owner, int lane)
+    {
+        foreach (CardSlot slot in slots)
+        {
+            if (slot.Owner == owner && slot.Lane == lane)
+            {
+                return slot.isEmpty;
+            }
+        }
+        return false;
+    }
+
     private CardSlot FindSlotAt(Vector2 screenPoint, Camera cam)
     {
         foreach (CardSlot slot in slots)

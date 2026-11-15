@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Net.Http.Headers;
 using System.Reflection.PortableExecutable;
@@ -11,6 +12,8 @@ public class CombatManager : MonoBehaviour
 {
     private enum CombatMode {None, Attack, Heal}
     [SerializeField] private TurnManager turnManager;
+    [SerializeField] private BoardManager boardManager;
+    [SerializeField] private List<PlayerToken> tokens;
     
     [Header("Glow colours")] 
      [SerializeField] private Color neutralColor = new Color(1f, 0.9f, 0.3f, 1f);
@@ -23,6 +26,11 @@ public class CombatManager : MonoBehaviour
     {
         CardObject.Spawned += HandleCardSpawned;
         turnManager.PhaseChanged += HandlePhaseChanged;
+        foreach (PlayerToken t in tokens)
+        {
+            t.Clicked += HandleTokenClicked;
+            t.Defeated += HandleTokenDefeated;
+        }
     }
 
     private void OnDisable()
@@ -92,6 +100,11 @@ public class CombatManager : MonoBehaviour
             return;
         }
 
+        if (turnManager.IsGameOver)
+        {
+            return;
+        }
+
         if (!turnManager.IsTurnPhase) return;
         Player current = turnManager.CurrentPlayer;
 
@@ -123,6 +136,44 @@ public class CombatManager : MonoBehaviour
             if (card.Owner == current) Select(card);;
             break;
         }
+    }
+
+    private void HandleTokenClicked(PlayerToken token)
+    {
+        if (turnManager.IsGameOver) { Debug.Log("[Token] blocked: game is over"); return; }
+        if (!turnManager.IsTurnPhase) { Debug.Log($"[Token] blocked: not a Turn phase ({turnManager.CurrentPhase})"); return; }
+        if (selected == null) { Debug.Log("[Token] blocked: no card selected"); return; }
+        if (mode != CombatMode.Attack) { Debug.Log($"[Token] blocked: mode is {mode}, press A first"); return; }
+        if (token.Owner == selected.Owner) { Debug.Log($"[Token] blocked: that token belongs to the same player as the selected card ({token.Owner})"); return; }
+        
+        if (turnManager.IsGameOver || !turnManager.IsTurnPhase)
+        {
+            return;
+        }
+        if (selected == null || mode != CombatMode.Attack)
+        {
+            return;
+        }
+        if (token.Owner == selected.Owner)
+        {
+            return;
+        }
+
+        if (!boardManager.IsLaneOpen(token.Owner, selected.Lane))
+        {
+            Debug.Log($"[Combat] lane {selected.Lane} is blocked, can't reach the token");
+            return;
+        }
+
+        Debug.Log($"{selected.Data.cardName} attacks the {token.Owner} token for {selected.CurrentDamage}");
+        token.TakeDamage(selected.CurrentDamage);
+        FinishAction();
+    }
+
+    private void HandleTokenDefeated(PlayerToken token)
+    {
+        Player winner = token.Owner == Player.PlayerOne ? Player.PlayerTwo : Player.PlayerOne;
+        turnManager.EndGame(winner);
     }
 
     private void FinishAction()
