@@ -167,16 +167,10 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             if (effect.Type == AbilityType.Burn || effect.Type == AbilityType.Poison)
             {
                 TakeDamage(effect.Value);
-                if (CurrentHealth == 0)
-                {
-                    return;
-                }
-                effect.Remaining--;
-                if (effect.Remaining <= 0)
-                {
-                    effects.Remove(effect);
-                }
-             }
+                if (CurrentHealth == 0) return;
+            }
+            effect.Remaining--;
+            if (effect.Remaining <= 0) effects.Remove(effect);
         }
 
         RefreshStatusText();
@@ -192,7 +186,7 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         string text = "";
         foreach (StatusEffect effect in effects)
         {
-            text += $"<color=#{effect.ColorHex}>{effect.Type} {effect.Remaining}</color>\n";
+            text += $"<color=#{effect.ColorHex}>{effect.Label} {effect.Remaining}</color>\n";
         }
         statusText.text = text;
     }
@@ -200,14 +194,14 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public void TakeDamage(int amount)
     {
         CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
-        view.Refresh(CurrentHealth, CurrentDamage);
+        view.Refresh(CurrentHealth, CurrentDamage, CurrentHealthAttack);
         if (CurrentHealth == 0) Died?.Invoke(this);
     }
 
     public void Heal(int amount)
     {
         CurrentHealth = Mathf.Min(Data.health, CurrentHealth + amount);
-        view.Refresh(CurrentHealth, CurrentDamage);
+        view.Refresh(CurrentHealth, CurrentDamage, CurrentHealthAttack);
     }
 
     private void Update()

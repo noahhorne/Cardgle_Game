@@ -17,8 +17,8 @@ MonoBehaviour:
   cardArt: {fileID: 0}
   health: 10
   damage: 2
-  healthAttack: 0
+  healthAttack: 2
   speed: 0
   cost: 0
-  activeAbility: {fileID: 11400000, guid: d050697d462544e46b4281b05458824d, type: 2}
+  activeAbility: {fileID: 11400000, guid: f894d753ae7ebd442b827f68cd721a26, type: 2}
   passiveAbility: {fileID: 0}

@@ -14,12 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardgleGame.Card
   cardName: JOe
   rarity: 0
-  cardArt: {fileID: 1858515702719996103, guid: 9cc9b9730120b834b8970ab500dd9c31, type: 3}
-  cardType: 0
+  cardArt: {fileID: 0}
   health: 67
   damage: 7
   healthAttack: 0
   speed: 54
   cost: 2
-  activeAbility: {fileID: 0}
+  activeAbility: {fileID: 11400000, guid: d24b41c39071025459be67578ecefe88, type: 2}
   passiveAbility: {fileID: 0}

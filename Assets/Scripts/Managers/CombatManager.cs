@@ -151,6 +151,7 @@ public class CombatManager : MonoBehaviour
         switch (mode)
         {
             case CombatMode.Attack:
+            if (card.Owner == selected.Owner) return;
             Attack(selected, card);
             FinishAction();
             break;
