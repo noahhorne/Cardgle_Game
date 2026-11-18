@@ -15,6 +15,20 @@ public class StatusEffect : MonoBehaviour
         Remaining = remaining;
     }
 
+    public string Label
+    {
+        get
+        {
+            switch (Type)
+            {
+                case AbilityType.Burn: return "Burning";
+                case AbilityType.Poison: return "Poisoned";
+                case AbilityType.Thorns: return "Thorns";
+                default: return Type.ToString();
+            }
+        }
+    }
+
     public string ColorHex
     {
         get

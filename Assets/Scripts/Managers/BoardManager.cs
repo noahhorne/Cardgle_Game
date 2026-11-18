@@ -69,6 +69,14 @@ public class BoardManager : MonoBehaviour
         return result;
     }
 
+    public void ClearBoard()
+    {
+        foreach (CardSlot slot in slots)
+        {
+            if (!slot.isEmpty) Destroy(slot.Occupant.gameObject);
+            slot.Clear();
+        }
+    }
     public bool IsLaneOpen(Player owner, int lane)
     {
         foreach (CardSlot slot in slots)

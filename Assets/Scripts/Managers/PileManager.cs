@@ -71,17 +71,34 @@ public class PileManager : MonoBehaviour
 
     private void Start()
     {
+        DealNewGame();
+    }
+
+    public void ResetPiles()
+    {
+        foreach (PlayerPiles p in piles.Values)
+        {
+            p.draw.cards.Clear();
+            p.hand.cards.Clear();
+            p.discard.cards.Clear();
+        }
+ 
+        DealNewGame();
+    }
+
+    private void DealNewGame()
+    {
         foreach (PlayerPiles p in piles.Values)
         {
             p.draw.cards.AddRange(startingCards);
             Shuffle(p.draw);
-
+ 
             for (int i = 0; i < openingHandSize; i++)
             {
                 DrawInto(p);
             }
         }
-
+ 
         RefreshPileViews();
     }
 

@@ -16,5 +16,5 @@ MonoBehaviour:
   cost: 0
   description: Burning ahh
   type: 1
-  value: 0
+  value: 1
   duration: 2

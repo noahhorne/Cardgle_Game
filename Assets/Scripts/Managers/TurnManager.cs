@@ -118,6 +118,12 @@ public class TurnManager : MonoBehaviour
         GameOver?.Invoke(winningPlayer);
     }
 
+    public void ResetGame()
+    {
+        IsGameOver = false;
+        StartPhase(TurnPhase.PlayerOnePlace);
+    }
+
     private void UpdateLabel()
     {
         if (phaseLabel == null)

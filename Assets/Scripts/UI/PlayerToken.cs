@@ -32,6 +32,12 @@ public class PlayerToken : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    public void ResetHealth()
+    {
+        CurrentHealth = maxHealth;
+        UpdateText();
+    }
+
     public void OnPointerClick(PointerEventData eventData)
     {
         Clicked?.Invoke(this);

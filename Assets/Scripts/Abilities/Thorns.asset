@@ -16,5 +16,5 @@ MonoBehaviour:
   cost: 0
   description: Thorny
   type: 3
-  value: 0
+  value: 1
   duration: 2

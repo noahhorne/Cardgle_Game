@@ -20,5 +20,5 @@ MonoBehaviour:
   healthAttack: 1
   speed: 1
   cost: 1
-  activeAbility: {fileID: 11400000, guid: f894d753ae7ebd442b827f68cd721a26, type: 2}
+  activeAbility: {fileID: 0}
   passiveAbility: {fileID: 0}

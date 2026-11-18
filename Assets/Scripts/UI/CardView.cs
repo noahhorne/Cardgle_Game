@@ -12,6 +12,9 @@ public class CardView : MonoBehaviour
     [SerializeField] private TMP_Text damageText;
     [SerializeField] private TMP_Text costText;
     [SerializeField] private Image artwork;
+    [SerializeField] private TMP_Text healText;
+    [SerializeField] private TMP_Text abilityText;
+    [SerializeField] private TMP_Text statusText;
 
     public void Display(Card card)
     {
@@ -20,11 +23,26 @@ public class CardView : MonoBehaviour
         damageText.text = card.damage.ToString();
         costText.text = card.cost.ToString();
         artwork.sprite = card.cardArt;
+
+        if (healText != null)
+        {
+            healText.text = card.healthAttack > 0 ? "+" + card.healthAttack : "";
+        }
+
+        if (abilityText != null)
+        {
+            abilityText.text = card.activeAbility != null ? card.activeAbility.abilityName : "";
+        }
     }
 
-    public void Refresh(int health, int damage)
+    public void Refresh(int health, int damage, int healAmount)
     {
         healthText.text = health.ToString();
         damageText.text = damage.ToString();
+
+        if (healText != null)
+        {
+            healText.text = healAmount > 0 ? "+" + healAmount : "";
+        }
     }
 }

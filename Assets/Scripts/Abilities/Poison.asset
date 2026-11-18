@@ -16,5 +16,5 @@ MonoBehaviour:
   cost: 0
   description: Poison ahh
   type: 2
-  value: 0
+  value: 1
   duration: 2
