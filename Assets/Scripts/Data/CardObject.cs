@@ -3,6 +3,9 @@ using CardgleGame;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 
 [RequireComponent(typeof(CardView))]
 public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
@@ -14,6 +17,7 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     [Header("Selection")]
     [SerializeField] private GameObject glow;
+    [SerializeField] private TMP_Text statusText;
 
     public Card Data { get; private set;}
     public int CurrentHealth { get; private set;}
@@ -36,6 +40,7 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public event Action<CardObject> Died;
 
     private CardView view;
+    private readonly List<StatusEffect> effects = new List<StatusEffect>();
     private Image glowImage;
     private RectTransform rectTransform;
 
@@ -64,6 +69,7 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         CurrentHealthAttack = data.healthAttack;
         CurrentSpeed = data.speed;
         view.Display(data);
+        RefreshStatusText();
         Spawned?.Invoke(this);
     }
 
@@ -114,6 +120,81 @@ public class CardObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             glowImage.color = color;
         }
+    }
+
+    public StatusEffect GetEffect(AbilityType type)
+    {
+        foreach (StatusEffect effect in effects)
+        {
+            if (effect.Type == type)
+            {
+                return effect;
+            }
+        }
+        return null;
+    }
+
+    public bool HasEffect(AbilityType type)
+    {
+        return GetEffect(type) != null;
+    }
+
+    public void AddEffect(AbilityType type, int value, int duration)
+    {
+        StatusEffect existing = GetEffect(type);
+        if (existing != null)
+        {
+            existing.Value = value;
+            existing.Remaining = duration;
+        }
+        else
+        {
+            effects.Add(new StatusEffect(type, value, duration));
+        }
+        RefreshStatusText();
+    }
+
+    public void TickEffects()
+    {
+        Debug.Log($"[Tick] {Data.cardName} has {effects.Count} effect(s)");
+        if (effects.Count == 0)
+        {
+            return;
+        }
+
+        foreach (StatusEffect effect in effects.ToArray())
+        {
+            if (effect.Type == AbilityType.Burn || effect.Type == AbilityType.Poison)
+            {
+                TakeDamage(effect.Value);
+                if (CurrentHealth == 0)
+                {
+                    return;
+                }
+                effect.Remaining--;
+                if (effect.Remaining <= 0)
+                {
+                    effects.Remove(effect);
+                }
+             }
+        }
+
+        RefreshStatusText();
+    }
+    
+    private void RefreshStatusText()
+    {
+        if (statusText == null)
+        {
+            return;
+        }
+
+        string text = "";
+        foreach (StatusEffect effect in effects)
+        {
+            text += $"<color=#{effect.ColorHex}>{effect.Type} {effect.Remaining}</color>\n";
+        }
+        statusText.text = text;
     }
 
     public void TakeDamage(int amount)
