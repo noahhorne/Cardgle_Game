@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de6a65361b562ec4b8b7ba5dec05a817, type: 3}
-  m_Name: New Card 1
+  m_Name: Wise-Man
   m_EditorClassIdentifier: Assembly-CSharp::CardgleGame.Card
-  cardName: Paul
+  cardName: Wiser
   rarity: 0
   cardArt: {fileID: 0}
-  health: 1
-  damage: 1
-  healthAttack: 2
-  speed: 2
-  cost: 2
-  activeAbility: {fileID: 11400000, guid: d24b41c39071025459be67578ecefe88, type: 2}
+  health: 20
+  damage: 5
+  healthAttack: 5
+  speed: 0
+  cost: 0
+  activeAbility: {fileID: 11400000, guid: f894d753ae7ebd442b827f68cd721a26, type: 2}
   passiveAbility: {fileID: 0}
