@@ -56,6 +56,19 @@ public class BoardManager : MonoBehaviour
         turnManager.NotifyPlaced();
     }
 
+    public List<CardObject> GetCards(Player owner)
+    {
+        List<CardObject> result = new List<CardObject>();
+        foreach (CardSlot slot in slots)
+        {
+            if (slot.Owner == owner && !slot.isEmpty)
+            {
+                result.Add(slot.Occupant);
+            }
+        }
+        return result;
+    }
+
     public bool IsLaneOpen(Player owner, int lane)
     {
         foreach (CardSlot slot in slots)

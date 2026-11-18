@@ -2,15 +2,17 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Net.Http.Headers;
 using System.Reflection.PortableExecutable;
+using Unity.InferenceEngine.Tokenization.Parsers.HuggingFace;
 using Unity.VisualScripting;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 #endif
 
 public class CombatManager : MonoBehaviour
 {
-    private enum CombatMode {None, Attack, Heal}
+    private enum CombatMode {None, Attack, Heal, Ability }
     [SerializeField] private TurnManager turnManager;
     [SerializeField] private BoardManager boardManager;
     [SerializeField] private List<PlayerToken> tokens;
@@ -19,6 +21,7 @@ public class CombatManager : MonoBehaviour
      [SerializeField] private Color neutralColor = new Color(1f, 0.9f, 0.3f, 1f);
      [SerializeField] private Color attackColor = new Color(1f, 0.25f, 0.25f, 1f);
      [SerializeField] private Color healColor = new Color(0.3f, 1f, 0.4f, 1f);
+     [SerializeField] private Color abilityColor = new Color(0.7f, 0.4f, 1f, 1f);
     private CardObject selected;
     private CombatMode mode = CombatMode.None;
 
@@ -47,6 +50,15 @@ public class CombatManager : MonoBehaviour
     private void HandlePhaseChanged(TurnPhase phase)
     {
         Deselect();
+
+        if (turnManager.IsTurnPhase && !turnManager.IsGameOver)
+        {
+            foreach (CardObject card in boardManager.GetCards(turnManager.CurrentPlayer))
+            {
+                Debug.Log($"[Tick] ticking {card.Data.cardName} ({card.Owner})");
+                card.TickEffects();
+            }
+        }
     }
 
     private void Update()
@@ -59,8 +71,10 @@ public class CombatManager : MonoBehaviour
         if (KeyPressed(KeyCode.A))
         {
             SetMode(CombatMode.Attack);
-        } else if (KeyPressed(KeyCode.H)){
+        } else if (KeyPressed(KeyCode.H)) {
             SetMode(CombatMode.Heal);
+        } else if (KeyPressed(KeyCode.E)) {
+            SetMode(CombatMode.Ability);
         } else if (KeyPressed(KeyCode.Escape)) {
             Deselect();
         }
@@ -79,6 +93,7 @@ public class CombatManager : MonoBehaviour
         {
             case KeyCode.A: return kb.aKey.wasPressedThisFrame;
             case KeyCode.H: return kb.hKey.wasPressedThisFrame;
+            case KeyCode.E: return kb.eKey.wasPressedThisFrame;
             case KeyCode.Escape: return kb.escapeKey.wasPressedThisFrame;
         }
         return false;
@@ -89,9 +104,20 @@ public class CombatManager : MonoBehaviour
 
     private void SetMode(CombatMode newMode)
     {
+        Debug.Log($"[Combat] SetMode({newMode}) | card={selected.Data.cardName} | ability={(selected.Data.activeAbility == null ? "NONE ASSIGNED" : selected.Data.activeAbility.name + ", type=" + selected.Data.activeAbility.type)}");
+        if (newMode == CombatMode.Ability && !HasAbility(selected))
+        {
+            Debug.Log("[Combat] this card has no active ability");
+            return;
+        }
         mode = (mode == newMode) ? CombatMode.None : newMode;
         UpdateGlow();
         Debug.Log($"[Combat] mode: {mode}");
+    }
+
+    private bool HasAbility(CardObject card)
+    {
+        return card.Data.activeAbility != null && card.Data.activeAbility.type != AbilityType.None;
     }
     private void HandleCardClicked(CardObject card)
     {
@@ -106,6 +132,7 @@ public class CombatManager : MonoBehaviour
         }
 
         if (!turnManager.IsTurnPhase) return;
+
         Player current = turnManager.CurrentPlayer;
 
         if (selected == null)
@@ -116,7 +143,8 @@ public class CombatManager : MonoBehaviour
         
         if (selected == card)
         {
-            Deselect();
+            if (mode == CombatMode.Ability && TryUseAbility(selected, card)) FinishAction();
+            else Deselect();
             return;
         }
 
@@ -131,6 +159,11 @@ public class CombatManager : MonoBehaviour
             if (card.Owner != selected.Owner) return;
             if (Heal(selected, card)) FinishAction();
             break;
+
+            case CombatMode.Ability:
+            if (TryUseAbility(selected, card)) FinishAction();
+            break;
+            
 
             default:
             if (card.Owner == current) Select(card);;
@@ -196,6 +229,7 @@ public class CombatManager : MonoBehaviour
         {
             case CombatMode.Attack: return attackColor;
             case CombatMode.Heal: return healColor;
+            case CombatMode.Ability: return abilityColor;
             default: return neutralColor;
         }
     }
@@ -221,8 +255,17 @@ public class CombatManager : MonoBehaviour
     private void Attack(CardObject attacker, CardObject target)
     {
         int damage = attacker.CurrentDamage;
+        StatusEffect thorns = target.GetEffect(AbilityType.Thorns);
+        Debug.Log($"[Thorns] target has thorns: {thorns != null}");
+
         Debug.Log($"{attacker.Data.cardName} attacks {target.Data.cardName} for {damage}");
         target.TakeDamage(damage);
+
+        if (thorns != null)
+        {
+            Debug.Log($"{attacker.Data.cardName} is hurt by thorns for {thorns.Value}");
+            attacker.TakeDamage(thorns.Value);
+        }
     }
 
     private bool Heal(CardObject healer, CardObject target)
@@ -234,6 +277,28 @@ public class CombatManager : MonoBehaviour
         }
         Debug.Log($"{healer.Data.cardName} heals {target.Data.cardName} for {amount}");
         target.Heal(amount);
+        return true;
+    }
+
+    private bool TryUseAbility(CardObject user, CardObject target)
+    {
+        CardAbility ability = user.Data.activeAbility;
+        if (ability == null || ability.type == AbilityType.None)
+        {
+            return false;
+        }
+
+        if (ability.TargetAllies)
+        {
+            if (target.Owner != user.Owner) return false;
+        }
+        else
+        {
+            if (target.Owner == user.Owner) return false;
+        }
+
+        target.AddEffect(ability.type, ability.value, ability.duration);
+        Debug.Log($"{user.Data.cardName} uses {ability.type} on {target.Data.cardName} ({ability.value} for {ability.duration} turns)");
         return true;
     }
     
