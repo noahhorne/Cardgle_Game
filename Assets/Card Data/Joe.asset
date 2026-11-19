@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de6a65361b562ec4b8b7ba5dec05a817, type: 3}
-  m_Name: New Card
+  m_Name: Joe
   m_EditorClassIdentifier: Assembly-CSharp::CardgleGame.Card
-  cardName: Jacob
-  rarity: 0
+  cardName: Joe
+  rarity: 3
   cardArt: {fileID: 0}
-  health: 1
-  damage: 1
-  healthAttack: 1
-  speed: 1
-  cost: 1
-  activeAbility: {fileID: 0}
+  health: 20
+  damage: 5
+  healthAttack: 3
+  speed: 0
+  cost: 0
+  activeAbility: {fileID: 11400000, guid: f894d753ae7ebd442b827f68cd721a26, type: 2}
   passiveAbility: {fileID: 0}

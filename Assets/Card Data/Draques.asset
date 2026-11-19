@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de6a65361b562ec4b8b7ba5dec05a817, type: 3}
-  m_Name: Example
+  m_Name: Draques
   m_EditorClassIdentifier: Assembly-CSharp::CardgleGame.Card
-  cardName: Lalo
-  rarity: 0
+  cardName: Draques
+  rarity: 2
   cardArt: {fileID: 0}
-  health: 10
+  health: 15
   damage: 2
-  healthAttack: 2
+  healthAttack: 4
   speed: 0
   cost: 0
-  activeAbility: {fileID: 11400000, guid: f894d753ae7ebd442b827f68cd721a26, type: 2}
+  activeAbility: {fileID: 0}
   passiveAbility: {fileID: 0}

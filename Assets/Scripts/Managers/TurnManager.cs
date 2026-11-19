@@ -1,9 +1,6 @@
 using UnityEngine;
 using TMPro;
 using System;
-using Unity.Hierarchy.Editor;
-using Unity.Tutorials.Editor;
-using UnityEngine.WSA;
 
 public enum Player { PlayerOne, PlayerTwo }
 public enum TurnPhase { PlayerOnePlace, PlayerTwoPlace, PlayerOneTurn, PlayerTwoTurn}
